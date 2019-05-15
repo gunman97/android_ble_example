@@ -80,13 +80,17 @@ public class MainActivity extends AppCompatActivity {
         connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (bIsScanning_ == true) {
+                    //스캔중인데 버튼을 누르면 스캔을 종료하도록
                     stopScan();
                 }
                 else if (bIsConnected_ == true){
+                    //연결중인데 버튼을 누르면 연결을 끊도록
                     disconnectGattServer();
                 }
                 else if (bIsScanning_ == false) {
+                    //연결상태도 아니고 스캔상태도 아닌데 버튼을 누르면 블루투스 장치의 스캔을 시작하도록
                     startScan();
                 }
             }
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<ScanFilter> filters= new ArrayList<>();
         ScanFilter scan_filter= new ScanFilter.Builder()
-                .setServiceUuid( new ParcelUuid( UUID_DKDK_SERVICE ) )
+                .setServiceUuid( new ParcelUuid( UUID_DKDK_SERVICE ) ) //필터 값으로 고유 UUID값을 넣고
                 .build();
         filters.add( scan_filter );
 
@@ -196,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         bleScanner_ = bleAdapter_.getBluetoothLeScanner();
         bleScanner_.startScan( filters, settings, scanCb_);
 
-        setConnectBtn("Stop scanning", true);
+        setConnectBtn("Stop scanning", true); //스캔이 시작되면 첫번째 버튼의 표시 문구를 바꾸고
 
         scanHandler_ = new Handler();
         scanHandler_.postDelayed(new Runnable() {
@@ -204,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 stopScan();
             }
-        }, SCAN_PERIOD );
+        }, SCAN_PERIOD ); //약 7초간 스캔을 하면 자동으로 스캔 활동을 종료 하게끔 설정
 
         bIsScanning_ = true;
     }
@@ -317,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
             List<BluetoothGattCharacteristic> matching_characteristics = BluetoothUtils.findBLECharacteristics( _gatt );
             if( matching_characteristics.isEmpty() ) {
                 Log.e( TAG, "failed to find characteristic" );
+                disconnectGattServer();
                 setConnectBtn("Start scanning", true);
                 setCmdBtn("Send cmd", true);
                 return;
@@ -421,6 +426,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enableBLE() {
+        //블루투스 설정 화면으로 이동
         Intent ble_enable_intent= new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
         startActivityForResult( ble_enable_intent, REQUEST_ENABLE_BT );
     }
